@@ -1,3 +1,12 @@
-# Project exclude paths
-/out/
+# IntelliJ
 .idea/
+*.iml
+
+# Build
+out/
+build/
+target/
+
+# OS
+.DS_Store
+Thumbs.db
