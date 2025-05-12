@@ -34,6 +34,7 @@ import org.openqa.selenium.TimeoutException;
 // 7. Закрыть старое окно, повторить пункт 1.
 // 8. Если не ссылки на следующую страницу, закрыть окно.
 
+import java.sql.*;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -243,6 +244,25 @@ public class parser {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        String url = "jdbc:postgresql://localhost:5432/mydb";
+        String user = "postgres";
+        String password = "postgres";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            System.out.println("Успешное подключение к базе данных!");
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT NOW()");
+            if (rs.next()) {
+                System.out.println("Время в базе: " + rs.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("Ошибка подключения: " + e.getMessage());
+        }
+
+        System.exit(0);
+
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\adil\\Downloads\\chromedriver-win64-124\\chromedriver-win64\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.get(categoryPath);
