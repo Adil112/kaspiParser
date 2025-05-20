@@ -90,14 +90,13 @@ class ProductParseThread extends Thread {
                     }
                 }
 
-//            break; // убрать и вернуть ниже, только первые 5 продвацов берет для тестирования
+                //break; // убрать и вернуть ниже, только первые 5 продвацов берет для тестирования
 
                 try {
                     WebElement almatyOption = cardDriver.findElement(By.xpath("//a[@data-city-id='750000000']"));
                     almatyOption.click();
-                    Thread.sleep(1000);
-                } catch (Exception ignored) {
-                }
+                    Thread.sleep(600);
+                } catch (Exception ignored) {}
 
 
                 try {
@@ -106,7 +105,7 @@ class ProductParseThread extends Thread {
                         break;
                     }
                     nextBtn.click();
-                    Thread.sleep(1000);
+                    Thread.sleep(600);
                 } catch (Exception e) {
                     break;
                 }
@@ -115,22 +114,22 @@ class ProductParseThread extends Thread {
             //shopDriver = new ChromeDriver();
             for (String shopHref : sellerLinks) {
                 cardDriver.get(shopHref);
-                String sellerName = "", phoneNumber = "", dateFrom = "", rating = "";
+                String sellerName = "";
+                String phoneNumber = "";
+                String dateFrom = "";
+                String rating = "";
 
                 try {
                     sellerName = cardDriver.findElement(By.className("merchant-profile__title")).getText();
-                } catch (NoSuchElementException ignored) {
-                }
+                } catch (NoSuchElementException ignored) {}
 
                 try {
                     phoneNumber = cardDriver.findElement(By.className("merchant-profile__contact-text")).getText();
-                } catch (NoSuchElementException ignored) {
-                }
+                } catch (NoSuchElementException ignored) {}
 
                 try {
                     dateFrom = cardDriver.findElement(By.className("merchant-profile__register-date")).getText();
-                } catch (NoSuchElementException ignored) {
-                }
+                } catch (NoSuchElementException ignored) {}
 
                 try {
                     WebElement ratingElement = cardDriver.findElement(By.cssSelector(".merchant-profile__rating.rating._seller"));
@@ -139,13 +138,12 @@ class ProductParseThread extends Thread {
                         double ratingDouble = Double.parseDouble(matcher.group(1)) / 10.0;
                         rating = String.valueOf(ratingDouble);
                     }
-                } catch (NoSuchElementException ignored) {
-                }
+                } catch (NoSuchElementException ignored) {}
 
                 Deal deal = new Deal(sellerName.replaceAll(" в городе", ""), phoneNumber, dateFrom.replaceAll("В Kaspi Магазине с ", ""), rating);
                 product.addDeal(deal);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(600);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -196,13 +194,14 @@ class Product {
 
     public Product() {}
 
-    public void setName (String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     public String getName()  {
         return this.name;
     }
+
     public void addDeal(Deal deal) {
         this.deals.add(deal);
     }
@@ -215,7 +214,7 @@ class Product {
 
 public class parser {
 
-    public final static String categoryPath = "https://kaspi.kz/shop/c/beauty%20care/";
+    public final static String categoryPath = "https://kaspi.kz/shop/c/pet goods/";
 
     public final static ChromeOptions chromeOptions = new ChromeOptions()
             .addArguments("--headless")
@@ -246,7 +245,7 @@ public class parser {
             PreparedStatement shopStmt = conn.prepareStatement(insertShopSql);
 
             for (Product product : products) {
-                if(!product.getName().isEmpty()){
+                if (!product.getName().isEmpty()) {
                     productStmt.setString(1, product.getName());
                     productStmt.executeUpdate();
                 }
@@ -300,6 +299,7 @@ public class parser {
         }
         return names;
     }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         String url = "jdbc:postgresql://localhost:5432/mydb";
         String user = "postgres";
@@ -308,7 +308,7 @@ public class parser {
         Set<String> shopNames = null;
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             productNames = loadExistingData(conn, "SELECT name FROM products");
-            shopNames = loadExistingData(conn, "SELECT name FROM shops");
+            shopNames = loadExistingData(conn, "SELECT name FROM shops where id > 45000");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -317,27 +317,28 @@ public class parser {
         WebDriver driver = new ChromeDriver();
         driver.get(categoryPath);
 
-        WebElement almatyOption1 = driver.findElement(By.xpath("//a[@data-city-id='750000000']"));
-        almatyOption1.click();
+        try {
+            WebElement almatyOption1 = driver.findElement(By.xpath("//a[@data-city-id='750000000']"));
+            almatyOption1.click();
+        } catch (Exception ignored) {}
 
-        int page = 47;
-        for(int i = 0; i < 47; i++){
+        int page = 27;
+        for (int i = 0; i < 27; i++) {
             try {
                 WebElement nextButton = driver.findElement(By.xpath("//li[contains(@class, 'pagination__el') and contains(text(), 'Следующая')]"));
                 nextButton.click();
-                Thread.sleep(new Random().nextInt(1001) + 500);
+                Thread.sleep(new Random().nextInt(1201) + 200);
             } catch (NoSuchElementException e) {
                 System.out.println("Кнопка 'Следующая' не найдена. Останавливаемся.");
                 break;
             }
         }
 
-
-        while (page < 51 && !nextFlag) {
+        while (page < 85 && !nextFlag) {
             try {
                 WebElement almatyOption = driver.findElement(By.xpath("//a[@data-city-id='750000000']"));
                 almatyOption.click();
-                Thread.sleep(1000);
+                Thread.sleep(300);
             } catch (Exception ignored) {}
 
             List<WebElement> products = driver.findElements(By.className("item-card__name-link"));
@@ -348,7 +349,7 @@ public class parser {
             try {
                 WebElement nextButton = driver.findElement(By.xpath("//li[contains(@class, 'pagination__el') and contains(text(), 'Следующая')]"));
                 nextButton.click();
-                Thread.sleep(new Random().nextInt(1001) + 500);
+                Thread.sleep(new Random().nextInt(801) + 200);
             } catch (NoSuchElementException e) {
                 System.out.println("Кнопка 'Следующая' не найдена. Останавливаемся.");
                 break;
