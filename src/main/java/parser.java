@@ -1,41 +1,31 @@
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.BufferedWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Random;
-import java.lang.Thread;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
-import org.openqa.selenium.TimeoutException;
-
-// 1. Скопировать ссылку на карточку.
-// 2. Открыть новое окно по ссылке.
-// 3. В новом окне по ссылке скопировать значения текста в тегах названия магазина и цены
-// 4. Записать это к карточке товара.
-// 5. Закрыть окно, открыть следующее.
-// 6. Дойдя до конца списка ссылок на карточки, открыть новое окно по следующей ссылке на страницу.
-// 7. Закрыть старое окно, повторить пункт 1.
-// 8. Если не ссылки на следующую страницу, закрыть окно.
-
-import java.sql.*;
-
-import org.openqa.selenium.chrome.ChromeOptions;
 
 class ProductParseThread extends Thread {
     public final static ChromeOptions chromeOptions = new ChromeOptions()
